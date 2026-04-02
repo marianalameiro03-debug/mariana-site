@@ -1710,6 +1710,7 @@ const css = `
   }
   .caderno-enter-btn.visible { color: rgba(200,169,110,0.55); }
   .caderno-enter-btn:hover   { color: rgba(200,169,110,0.90); letter-spacing: 0.32em; }
+  @keyframes caderno-opening-attr-in { from { opacity: 0; } to { opacity: 1; } }
 
   /* ── PortfolioCientificoView ── */
   .pc-wrap {
@@ -4886,7 +4887,8 @@ function TramStop({ x, isNight = false, onClick }) {
 
 
 /* ── CadernoOpening ─────────────────────────────────────── */
-const OPENING_PHRASE = "Uma cidade. Um portfólio. Uma pessoa.";
+const OPENING_PHRASE = "Paths are made by walking";
+const OPENING_ATTR   = "― Franz Kafka";
 
 function CadernoOpening({ onEnter }) {
   const [phase, setPhase] = useState("writing");
@@ -4910,6 +4912,8 @@ function CadernoOpening({ onEnter }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [handleEnter]);
 
+  const attrDelay = totalMs + 400;
+
   return (
     <div className={`caderno-opening${phase === "exit" ? " exit" : ""}`} onClick={handleEnter}>
       <div className="caderno-opening-text">
@@ -4919,6 +4923,17 @@ function CadernoOpening({ onEnter }) {
             : <span key={i} className="caderno-char"
                     style={{ animationDelay: `${i * CHAR_STAGGER}ms` }}>{char}</span>
         )}
+      </div>
+      <div style={{
+        fontFamily: "'DM Mono', monospace",
+        fontSize: "0.68rem",
+        letterSpacing: "0.12em",
+        color: "rgba(200,169,110,0.45)",
+        marginTop: "18px",
+        opacity: 0,
+        animation: `caderno-opening-attr-in 0.9s ease ${attrDelay}ms forwards`,
+      }}>
+        {OPENING_ATTR}
       </div>
       <button className={`caderno-enter-btn${phase === "ready" ? " visible" : ""}`}>
         → entrar
