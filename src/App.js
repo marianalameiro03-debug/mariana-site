@@ -1678,6 +1678,39 @@ const css = `
     to { clip-path: inset(0 -5% 0 0); }
   }
 
+  /* ── Caderno opening screen ── */
+  .caderno-opening {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #080a0f;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: opacity 0.9s ease;
+    cursor: pointer;
+  }
+  .caderno-opening.exit { opacity: 0; pointer-events: none; }
+  .caderno-opening-text {
+    font-family: 'Dancing Script', cursive;
+    font-weight: 600;
+    font-size: clamp(1.6rem, 3.8vw, 2.6rem);
+    color: #c8a96e;
+    line-height: 1.7;
+    text-align: center;
+    max-width: 680px;
+    padding: 0 32px;
+  }
+  .caderno-opening-text .caderno-char { color: #c8a96e; }
+  .caderno-enter-btn {
+    margin-top: 52px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(200,169,110,0);
+    background: none; border: none; cursor: pointer;
+    padding: 10px 18px;
+    transition: color 1.4s ease, letter-spacing 0.3s ease;
+  }
+  .caderno-enter-btn.visible { color: rgba(200,169,110,0.55); }
+  .caderno-enter-btn:hover   { color: rgba(200,169,110,0.90); letter-spacing: 0.32em; }
+
   /* ── PortfolioCientificoView ── */
   .pc-wrap {
     position: fixed; inset: 0;
@@ -2612,7 +2645,7 @@ const css = `
 
   /* ── Easter egg counter ── */
   .egg-counter {
-    position: fixed; bottom: 22px; right: 24px; z-index: 9000;
+    position: fixed; bottom: 22px; left: 24px; z-index: 9000;
     display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
     pointer-events: auto;
   }
@@ -2677,7 +2710,7 @@ const css = `
   .egg-hint-name { color: rgba(200,169,110,0.85); }
   .egg-hint-clue { color: rgba(200,169,110,0.38); font-style: italic; }
   .egg-toast {
-    position: fixed; bottom: 52px; right: 24px; z-index: 9001;
+    position: fixed; bottom: 52px; left: 24px; z-index: 9001;
     font-family: 'DM Mono', monospace;
     font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase;
     color: rgba(200,169,110,0.90);
@@ -2884,6 +2917,252 @@ const tint = (hex, f) => {
   return `rgb(${Math.round(r * f)},${Math.round(g * f)},${Math.round(b * f)})`;
 };
 
+
+/* ── Thematic Building Helper ── shared door SVG ── */
+function BldgDoor({ DX, DW, DH, H, wall }) {
+  const AR = DW / 2, ACY = H - DH;
+  return (
+    <g className="door-g door-cue">
+      <rect className="door-surround" x={DX-13} y={ACY-10} width={DW+26} height={H-ACY+10} fill={tint(wall,0.68)}/>
+      <path className="door-surround" d={`M${DX-13},${ACY} a${AR+13},${AR+13} 0 0,1 ${DW+26},0 Z`} fill={tint(wall,0.68)}/>
+      <rect x={DX-2} y={ACY} width={DW+4} height={H-ACY} fill="rgba(0,0,0,0.20)"/>
+      <rect className="door-body" x={DX} y={ACY} width={DW} height={H-ACY} fill="#1c1006"/>
+      <path className="door-body" d={`M${DX},${ACY} a${AR},${AR} 0 0,1 ${DW},0 Z`} fill="#1c1006"/>
+      <rect x={DX} y={ACY} width={4} height={H-ACY} fill="rgba(255,255,255,0.07)"/>
+      <path d={`M${DX+3},${ACY} a${AR-3},${AR-3} 0 0,1 ${DW-6},0 Z`} fill="#98bccc" opacity="0.72"/>
+      <path d={`M${DX+5},${ACY} a${AR-7},${AR-7} 0 0,1 ${DW*0.42},0`} fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1"/>
+      {[-0.28,0,0.28].map((a,i)=>{
+        const ex=DX+DW/2+Math.sin(a)*(AR-4), ey=ACY-Math.cos(a)*(AR-4);
+        return <line key={i} x1={DX+DW/2} y1={ACY} x2={ex} y2={ey} stroke="#5a3810" strokeWidth="1.2"/>;
+      })}
+      {(()=>{ const rH=H-ACY,ph=rH*0.30,ph2=rH*0.38,hw=DW/2-9; return <>
+        <rect x={DX+6}      y={ACY+8}      width={hw} height={ph}  rx="2" fill="none" stroke="#32200a" strokeWidth="1.4"/>
+        <rect x={DX+DW/2+3} y={ACY+8}      width={hw} height={ph}  rx="2" fill="none" stroke="#32200a" strokeWidth="1.4"/>
+        <rect x={DX+6}      y={ACY+8+ph+6} width={hw} height={ph2} rx="2" fill="none" stroke="#32200a" strokeWidth="1.4"/>
+        <rect x={DX+DW/2+3} y={ACY+8+ph+6} width={hw} height={ph2} rx="2" fill="none" stroke="#32200a" strokeWidth="1.4"/>
+      </>; })()}
+      <line x1={DX+DW/2} y1={ACY} x2={DX+DW/2} y2={H} stroke="#140c04" strokeWidth="1.5"/>
+      <circle cx={DX+DW*0.73} cy={ACY+(H-ACY)*0.46} r="4.5" fill="#c8a96e" stroke="#906030" strokeWidth="1"/>
+      <circle cx={DX+DW*0.27} cy={ACY+(H-ACY)*0.46} r="4.5" fill="#c8a96e" stroke="#906030" strokeWidth="1"/>
+    </g>
+  );
+}
+
+/* ── MuseumBldg ── neoclassical, columns, pediment ── */
+function MuseumBldg({ x, onOpen, isNight }) {
+  const W=520, H=460, WALL="#ece8d6";
+  const DW=78, DH=118, DX=(W-DW)/2;
+  const cols = Array.from({length:6},(_,i)=>Math.round((i+1)*W/7-10));
+  return (
+    <svg style={{position:'absolute',left:x,bottom:140,overflow:'visible'}} width={W} height={H}>
+      <defs>
+        <filter id={`ms_${x}`} x="-8%" y="0%" width="120%" height="100%">
+          <feDropShadow dx="7" dy="0" stdDeviation="6" floodOpacity="0.18"/>
+        </filter>
+        <linearGradient id={`mwl_${x}`} x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.14)"/>
+          <stop offset="55%" stopColor="rgba(255,255,255,0)"/>
+          <stop offset="100%" stopColor="rgba(0,0,0,0.10)"/>
+        </linearGradient>
+      </defs>
+
+      {/* Main wall */}
+      <rect x={0} y={58} width={W} height={H-58} fill={WALL} filter={`url(#ms_${x})`}/>
+      <rect x={0} y={58} width={W} height={H-58} fill={`url(#mwl_${x})`}/>
+
+      {/* Pediment */}
+      <polygon points={`${W*0.13},58 ${W*0.87},58 ${W*0.5},10`} fill={tint(WALL,0.94)}/>
+      <polygon points={`${W*0.13},58 ${W*0.87},58 ${W*0.5},10`} fill="none" stroke={tint(WALL,0.72)} strokeWidth="2.5"/>
+      <ellipse cx={W*0.5} cy={36} rx={26} ry={17} fill={tint(WALL,0.87)}/>
+      <ellipse cx={W*0.5} cy={36} rx={26} ry={17} fill="none" stroke={tint(WALL,0.68)} strokeWidth="1.2"/>
+
+      {/* Entablature */}
+      <rect x={-14} y={54} width={W+28} height={28} fill={tint(WALL,0.85)}/>
+      <rect x={-14} y={54} width={W+28} height={3}  fill="rgba(255,255,255,0.22)"/>
+      <rect x={-14} y={80} width={W+28} height={2}  fill="rgba(0,0,0,0.15)"/>
+      <text x={W/2} y={72} textAnchor="middle" fontFamily="'DM Mono',monospace" fontSize="8.5" letterSpacing="4" fill={tint(WALL,0.44)}>MUSEU DO TEMPO</text>
+
+      {/* Columns */}
+      {cols.map(cx=>(
+        <g key={cx}>
+          <rect x={cx}   y={82}  width={20} height={300} fill={tint(WALL,0.97)}/>
+          <rect x={cx}   y={82}  width={3}  height={300} fill="rgba(255,255,255,0.12)"/>
+          <rect x={cx-5} y={68}  width={30} height={16}  fill={tint(WALL,0.80)} rx="1"/>
+          <rect x={cx-5} y={68}  width={30} height={3}   fill="rgba(255,255,255,0.18)" rx="1"/>
+          <rect x={cx-5} y={380} width={30} height={12}  fill={tint(WALL,0.80)} rx="1"/>
+        </g>
+      ))}
+
+      {/* Inter-column windows */}
+      {[1,2,3,4].map(i=>{
+        const wx=Math.round((i+0.5)*W/7+10)-20;
+        const ww=Math.max(20,W/7-22);
+        return (
+          <g key={i}>
+            <rect x={wx} y={96} width={ww} height={90} fill={tint(WALL,0.65)} rx="1"/>
+            <path d={`M${wx},${144} a${ww/2},${ww*0.45} 0 0,1 ${ww},0`} fill={tint(WALL,0.52)}/>
+            {isNight && <rect x={wx} y={96} width={ww} height={90} fill="rgba(255,200,100,0.28)" rx="1"/>}
+          </g>
+        );
+      })}
+
+      {/* Steps */}
+      {[0,1,2].map(s=>(
+        <rect key={s} x={-s*20} y={H-14-s*13} width={W+s*40} height={15} fill={tint(WALL,0.79-s*0.04)}/>
+      ))}
+
+      {/* Night overlay */}
+      {isNight && <rect x={0} y={58} width={W} height={H-58} fill="rgba(10,6,40,0.32)"/>}
+
+      {onOpen && <g onClick={onOpen}><BldgDoor DX={DX} DW={DW} DH={DH} H={H} wall={WALL}/></g>}
+    </svg>
+  );
+}
+
+/* ── UniversityBldg ── tower, clock, arched windows ── */
+function UniversityBldg({ x, onOpen, isNight, glowing }) {
+  const W=430, H=490, WALL="#ede9d5";
+  const TW=84, TX=(W-84)/2;
+  const DW=70, DH=112, DX=(W-DW)/2;
+  return (
+    <svg style={{position:'absolute',left:x,bottom:140,overflow:'visible'}} width={W} height={H}>
+      <defs>
+        <filter id={`us_${x}`} x="-8%" y="-25%" width="120%" height="130%">
+          <feDropShadow dx="6" dy="0" stdDeviation="5" floodOpacity="0.20"/>
+        </filter>
+        <linearGradient id={`uwl_${x}`} x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.13)"/>
+          <stop offset="60%" stopColor="rgba(255,255,255,0)"/>
+          <stop offset="100%" stopColor="rgba(0,0,0,0.09)"/>
+        </linearGradient>
+      </defs>
+
+      {/* Tower body (extends above SVG top) */}
+      <rect x={TX} y={-95} width={TW} height={130} fill={tint(WALL,0.88)} filter={`url(#us_${x})`}/>
+      {/* Tower cornice */}
+      <rect x={TX-9} y={-95} width={TW+18} height={10} fill={tint(WALL,0.75)}/>
+      <rect x={TX-9} y={-95} width={TW+18} height={2}  fill="rgba(255,255,255,0.20)"/>
+      {/* Tower spire */}
+      <polygon points={`${TX-12},${-95} ${TX+TW+12},${-95} ${W/2},${-140}`} fill="#cc3e26"/>
+      <line x1={W/2} y1={-140} x2={W/2} y2={-95} stroke="#9e2618" strokeWidth="2"/>
+      {/* Clock face */}
+      <circle cx={W/2} cy={-55} r={24} fill={tint(WALL,0.95)} stroke={tint(WALL,0.68)} strokeWidth="2"/>
+      <circle cx={W/2} cy={-55} r={20} fill="none" stroke={tint(WALL,0.60)} strokeWidth="0.8"/>
+      {[0,1,2,3,4,5,6,7,8,9,10,11].map(h=>{
+        const a=(h/12)*Math.PI*2-Math.PI/2;
+        return <line key={h} x1={W/2+Math.cos(a)*16} y1={-55+Math.sin(a)*16}
+                            x2={W/2+Math.cos(a)*19} y2={-55+Math.sin(a)*19}
+                     stroke={tint(WALL,0.45)} strokeWidth="1.2"/>;
+      })}
+      <line x1={W/2} y1={-55} x2={W/2} y2={-70} stroke={tint(WALL,0.30)} strokeWidth="2" strokeLinecap="round"/>
+      <line x1={W/2} y1={-55} x2={W/2+11} y2={-55} stroke={tint(WALL,0.35)} strokeWidth="1.5" strokeLinecap="round"/>
+
+      {/* Roof (2 halves around tower) */}
+      <polygon points={`-22,28 ${TX-2},28 ${TX-2},${-12} ${W*0.14},28`} fill="none"/>
+      <polygon points={`-22,28 ${TX},28 ${W*0.5},${-8}`} fill="#d44a28"/>
+      <polygon points={`${TX+TW},28 ${W+22},28 ${W*0.5},${-8}`} fill="#a83018"/>
+
+      {/* Main wall */}
+      <rect x={0} y={28} width={W} height={H-28} fill={WALL} filter={`url(#us_${x})`}/>
+      {/* Cover center of roof with tower continuation */}
+      <rect x={TX} y={-10} width={TW} height={40} fill={tint(WALL,0.88)}/>
+      <rect x={0} y={28} width={W} height={H-28} fill={`url(#uwl_${x})`}/>
+
+      {/* Cornice */}
+      <rect x={-12} y={26} width={W+24} height={24} fill={tint(WALL,0.80)}/>
+      <rect x={-12} y={26} width={W+24} height={3}  fill="rgba(255,255,255,0.22)"/>
+      <rect x={-12} y={48} width={W+24} height={2}  fill="rgba(0,0,0,0.12)"/>
+      <text x={W/2} y={43} textAnchor="middle" fontFamily="'DM Mono',monospace" fontSize="8" letterSpacing="3.5" fill={tint(WALL,0.42)}>UNIVERSIDADE</text>
+
+      {/* Arched windows — 3 per floor × 2 floors */}
+      {[0,1].map(fl=>[0,1,2].map(col=>{
+        const wy=58+fl*155, wx=(col+1)*W/4-26, ww=W/4-18, wh=95;
+        const filled = isNight && glowing;
+        return (
+          <g key={`${fl}-${col}`}>
+            <rect x={wx} y={wy} width={ww} height={wh} fill={filled?"rgba(255,200,100,0.32)":tint(WALL,0.62)} rx="1"/>
+            <path d={`M${wx},${wy+wh*0.48} a${ww/2},${ww*0.52} 0 0,1 ${ww},0`} fill={filled?"rgba(255,210,120,0.45)":tint(WALL,0.48)}/>
+          </g>
+        );
+      }))}
+
+      {isNight && <rect x={0} y={28} width={W} height={H-28} fill="rgba(10,6,40,0.30)"/>}
+      {onOpen && <g onClick={onOpen}><BldgDoor DX={DX} DW={DW} DH={DH} H={H} wall={WALL}/></g>}
+    </svg>
+  );
+}
+
+/* ── LabBldg ── research institute, grid windows ── */
+function LabBldg({ x, onOpen, isNight, glowing }) {
+  const W=390, H=430, WALL="#d8e4e0";
+  const DW=66, DH=106, DX=(W-DW)/2;
+  const WIN_COLS=4, WIN_ROWS=3, WW=42, WH=50;
+  return (
+    <svg style={{position:'absolute',left:x,bottom:140,overflow:'visible'}} width={W} height={H}>
+      <defs>
+        <filter id={`ls_${x}`} x="-8%" y="0%" width="120%" height="100%">
+          <feDropShadow dx="6" dy="0" stdDeviation="5" floodOpacity="0.18"/>
+        </filter>
+        <linearGradient id={`lwl_${x}`} x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.12)"/>
+          <stop offset="60%" stopColor="rgba(255,255,255,0)"/>
+          <stop offset="100%" stopColor="rgba(0,0,0,0.08)"/>
+        </linearGradient>
+        {/* Roof gradient */}
+        <linearGradient id={`lrfL_${x}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#e05030"/>
+          <stop offset="100%" stopColor="#9e2618"/>
+        </linearGradient>
+        <linearGradient id={`lrfR_${x}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#7a1e12"/>
+          <stop offset="100%" stopColor="#4e0c06"/>
+        </linearGradient>
+      </defs>
+
+      {/* Roof */}
+      <polygon points={`-20,22 ${W/2},${-Math.round(W*0.17)} ${W/2},22`} fill={`url(#lrfL_${x})`}/>
+      <polygon points={`${W/2},22 ${W/2},${-Math.round(W*0.17)} ${W+20},22`} fill={`url(#lrfR_${x})`}/>
+
+      {/* Main wall */}
+      <rect x={0} y={22} width={W} height={H-22} fill={WALL} filter={`url(#ls_${x})`}/>
+      <rect x={0} y={22} width={W} height={H-22} fill={`url(#lwl_${x})`}/>
+
+      {/* Header band */}
+      <rect x={0}   y={22} width={W} height={36} fill={tint(WALL,0.82)}/>
+      <rect x={0}   y={22} width={W} height={3}  fill="rgba(255,255,255,0.22)"/>
+      <rect x={0}   y={56} width={W} height={2}  fill="rgba(0,0,0,0.12)"/>
+      <text x={W/2} y={44} textAnchor="middle" fontFamily="'DM Mono',monospace" fontSize="8" letterSpacing="3" fill={tint(WALL,0.40)}>LABORATÓRIO</text>
+
+      {/* Grid windows */}
+      {Array.from({length:WIN_ROWS},(_,row)=>
+        Array.from({length:WIN_COLS},(_,col)=>{
+          const gapX=(W-WIN_COLS*WW)/(WIN_COLS+1);
+          const gapY=52;
+          const wx=gapX+(col*(WW+gapX));
+          const wy=64+(row*(WH+gapY));
+          const lit = isNight && glowing;
+          return (
+            <g key={`${row}-${col}`}>
+              <rect x={wx-2} y={wy-2} width={WW+4} height={WH+4} fill={tint(WALL,0.70)} rx="1"/>
+              <rect x={wx}   y={wy}   width={WW}   height={WH}   fill={lit?"rgba(255,210,120,0.55)":"rgba(160,200,220,0.35)"} rx="1"/>
+              {/* Frame cross */}
+              <line x1={wx+WW/2} y1={wy} x2={wx+WW/2} y2={wy+WH} stroke={tint(WALL,0.55)} strokeWidth="1"/>
+              <line x1={wx} y1={wy+WH/2} x2={wx+WW} y2={wy+WH/2} stroke={tint(WALL,0.55)} strokeWidth="1"/>
+            </g>
+          );
+        })
+      )}
+
+      {/* Corner quoins (minimal) */}
+      {[-3,W-12].map(qx=>(
+        <rect key={qx} x={qx} y={22} width={15} height={H-22} fill={tint(WALL,0.88)} rx="0.5"/>
+      ))}
+
+      {isNight && <rect x={0} y={22} width={W} height={H-22} fill="rgba(10,6,40,0.28)"/>}
+      {onOpen && <g onClick={onOpen}><BldgDoor DX={DX} DW={DW} DH={DH} H={H} wall={WALL}/></g>}
+    </svg>
+  );
+}
 
 /* ── Building Component (SVG) ───────────────────────────── */
 function Bldg({ x, w, h, wall, az = 1, winCols = 2, doorW: dW = 66, doorH: dH = 100, onOpen, isNight = false, glowing = false }) {
@@ -4281,7 +4560,7 @@ function PortfolioView({ onExplore, onOpenPanel, onGoWorld, lang, onToggleLang }
           <div className="worlds-grid">
             {[
               { id: "caderno",    num: "I",   glyph: "✦", title: lang === "pt" ? "O Caderno"              : "The Notebook",          desc: lang === "pt" ? "Pensamentos em tinta."                      : "Thoughts in ink." },
-              { id: "timeline",   num: "II",  glyph: "◈", title: lang === "pt" ? "A Linha do Tempo"       : "The Timeline",          desc: lang === "pt" ? "Uma película de momentos."                 : "A film strip of moments." },
+              { id: "timeline",   num: "II",  glyph: "◈", title: lang === "pt" ? "Museu do Tempo"         : "Museum of Time",        desc: lang === "pt" ? "Arquivo biográfico em exposição."          : "A biographical archive on display." },
               { id: "portfolio-c",num: "III", glyph: "◉", title: lang === "pt" ? "Portfólio Científico"   : "Scientific Portfolio",  desc: lang === "pt" ? "Projetos, investigação, trabalho de campo." : "Projects, research, fieldwork." },
               { id: "research",   num: "IV",  glyph: "⬡", title: lang === "pt" ? "Interesses de Investigação" : "Research Interests", desc: lang === "pt" ? "Perguntas que ainda não sei responder."    : "Questions I can't yet answer." },
             ].map(w => (
@@ -4606,6 +4885,48 @@ function TramStop({ x, isNight = false, onClick }) {
 }
 
 
+/* ── CadernoOpening ─────────────────────────────────────── */
+const OPENING_PHRASE = "Uma cidade. Um portfólio. Uma pessoa.";
+
+function CadernoOpening({ onEnter }) {
+  const [phase, setPhase] = useState("writing");
+  const totalMs = OPENING_PHRASE.length * CHAR_STAGGER + CHAR_DRAW;
+
+  useEffect(() => {
+    if (phase !== "writing") return;
+    const t = setTimeout(() => setPhase("ready"), totalMs + 1400);
+    return () => clearTimeout(t);
+  }, [phase, totalMs]);
+
+  const handleEnter = useCallback(() => {
+    if (phase !== "ready") return;
+    setPhase("exit");
+    setTimeout(onEnter, 900);
+  }, [phase, onEnter]);
+
+  useEffect(() => {
+    const onKey = () => handleEnter();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [handleEnter]);
+
+  return (
+    <div className={`caderno-opening${phase === "exit" ? " exit" : ""}`} onClick={handleEnter}>
+      <div className="caderno-opening-text">
+        {Array.from(OPENING_PHRASE).map((char, i) =>
+          char === " "
+            ? <span key={i}> </span>
+            : <span key={i} className="caderno-char"
+                    style={{ animationDelay: `${i * CHAR_STAGGER}ms` }}>{char}</span>
+        )}
+      </div>
+      <button className={`caderno-enter-btn${phase === "ready" ? " visible" : ""}`}>
+        → entrar
+      </button>
+    </div>
+  );
+}
+
 /* ── CadernoView ────────────────────────────────────────── */
 const CADERNO_FRAGMENTS = [
   "Como é que se explica que a melancolia é mais confortável do que qualquer segundo de felicidade pura (seja lá o que isso for)?",
@@ -4673,7 +4994,7 @@ function CadernoView({ onBack, onGoWorld }) {
       </div>
       <div style={{ position: 'fixed', bottom: 28, left: 0, right: 0, display: 'flex', justifyContent: 'space-between', padding: '0 40px', pointerEvents: 'none' }}>
         <button className="world-nav-btn" style={{ pointerEvents: 'all', color: 'rgba(80,60,30,0.45)' }} onClick={() => onGoWorld("research")}>← Research Interests</button>
-        <button className="world-nav-btn next" style={{ pointerEvents: 'all', color: 'rgba(80,60,30,0.45)' }} onClick={() => onGoWorld("timeline")}>A Linha do Tempo →</button>
+        <button className="world-nav-btn next" style={{ pointerEvents: 'all', color: 'rgba(80,60,30,0.45)' }} onClick={() => onGoWorld("portfolio-c")}>Portfólio Científico →</button>
       </div>
     </div>
   );
@@ -4761,7 +5082,7 @@ function PortfolioCientificoView({ onBack, onGoWorld }) {
           </div>
         ))}
         <div className="world-bottom-nav">
-          <button className="world-nav-btn" onClick={() => onGoWorld("timeline")}>← A Linha do Tempo</button>
+          <button className="world-nav-btn" onClick={() => onGoWorld("caderno")}>← O Caderno</button>
           <button className="world-nav-btn next" onClick={() => onGoWorld("research")}>Research Interests →</button>
         </div>
       </div>
@@ -4917,8 +5238,8 @@ function LinhaTempoView({ onBack, onGoWorld }) {
         <div className="lt-museum-inner">
           <div className="lt-museum-topline">
             <div>
-              <div className="lt-museum-kicker">arquivo biografico em exposicao permanente</div>
-              <h1 className="lt-museum-title">Linha do Tempo</h1>
+              <div className="lt-museum-kicker">arquivo biográfico em exposição permanente</div>
+              <h1 className="lt-museum-title">Museu do Tempo</h1>
             </div>
           </div>
 
@@ -5020,6 +5341,8 @@ export default function App() {
   const [tramVisible, setTramVisible] = useState(false);
   const [tramFact, setTramFact]       = useState(null);
   const tramFactIdx                   = useRef(0);
+
+  const [showOpening, setShowOpening] = useState(true);
 
   // New easter egg / world state
   const [fireflies, setFireflies]     = useState(false);
@@ -5292,6 +5615,10 @@ export default function App() {
    <>
     <style>{css}</style>
 
+    {showOpening && (
+      <CadernoOpening onEnter={() => { setShowOpening(false); setView("street"); }} />
+    )}
+
     {/* ── World views ── */}
     {view === "caderno"     && <CadernoView onBack={goBack} onGoWorld={goToWorld} />}
     {view === "timeline"    && <LinhaTempoView onBack={goBack} onGoWorld={goToWorld} />}
@@ -5378,10 +5705,6 @@ export default function App() {
         {playing ? <span className="jazz-pause"><span/><span/></span> : "♪"}
       </button>
 
-      {/* Lang toggle */}
-      <button className="lang-btn" onClick={() => setLang(l => l === "en" ? "pt" : "en")}>
-        {lang === "pt" ? "EN" : "PT"}
-      </button>
 
       {/* Clouds layer */}
       <div ref={cloudsRef} className="clouds-layer" style={{ width: SCENE_W }}>
@@ -5436,23 +5759,23 @@ export default function App() {
           <span className="sign-coords">38°43'N 9°8'W · Lisboa</span>
         </div>
 
-        {/* B1 — The Student */}
-        <Bldg x={270}  w={280} h={430} wall="#f5e8b0" az={1} winCols={3} doorW={65}  doorH={100} onOpen={openPanel("ch1")}     isNight={isNight} glowing={visitedPanels.has("ch1")} />
+        {/* B1 — Universidade */}
+        <UniversityBldg x={270} onOpen={openPanel("ch1")} isNight={isNight} glowing={visitedPanels.has("ch1")} />
 
-        {/* B2 — The Laboratory */}
-        <Bldg x={610}  w={460} h={510} wall="#f5dfd0" az={2} winCols={3} doorW={80}  doorH={110} onOpen={openPanel("ch2")}     isNight={isNight} glowing={visitedPanels.has("ch2")} />
+        {/* B2 — Laboratório */}
+        <LabBldg x={760} onOpen={openPanel("ch2")} isNight={isNight} glowing={visitedPanels.has("ch2")} />
 
-        {/* B3 — The Field */}
-        <Bldg x={1140} w={380} h={460} wall="#d8e8c4" az={1} winCols={3} doorW={65}  doorH={100} onOpen={openPanel("ch3")}     isNight={isNight} glowing={visitedPanels.has("ch3")} />
+        {/* B3 — Museu do Tempo */}
+        <MuseumBldg x={1220} onOpen={() => goToWorld("timeline")} isNight={isNight} />
 
-        {/* B4 — The Page */}
-        <Bldg x={1590} w={360} h={400} wall="#e8c8a0" az={3} winCols={2} doorW={65}  doorH={100} onOpen={openPanel("ch4")}     isNight={isNight} glowing={visitedPanels.has("ch4")} />
+        {/* B4 — A Página */}
+        <Bldg x={1820} w={360} h={400} wall="#e8c8a0" az={3} winCols={2} doorW={65} doorH={100} onOpen={openPanel("ch4")} isNight={isNight} glowing={visitedPanels.has("ch4")} />
 
-        {/* B5 — Connect */}
-        <Bldg x={2020} w={380} h={480} wall="#c8dff0" az={2} winCols={3} doorW={65}  doorH={100} onOpen={openPanel("connect")} isNight={isNight} glowing={visitedPanels.has("connect")} />
+        {/* B5 — Contacto */}
+        <Bldg x={2260} w={380} h={480} wall="#c8dff0" az={2} winCols={3} doorW={65} doorH={100} onOpen={openPanel("connect")} isNight={isNight} glowing={visitedPanels.has("connect")} />
 
         {/* B6 — Epilogue (no door) */}
-        <Bldg x={2470} w={240} h={360} wall="#f5f0e4" az={2} winCols={2} isNight={isNight} />
+        <Bldg x={2730} w={240} h={360} wall="#f5f0e4" az={2} winCols={2} isNight={isNight} />
 
         {/* Tram */}
         {tramVisible && (
