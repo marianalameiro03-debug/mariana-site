@@ -5,7 +5,7 @@ const SCENE_W = 3600;
 
 /* ── CSS ──────────────────────────────────────────────── */
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Mono:wght@300;400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Mono:wght@300;400&family=Dancing+Script:wght@400;600&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1654,31 +1654,28 @@ const css = `
   }
   .caderno-text-area {
     position: absolute;
-    top: 0; left: 108px; right: 48px; bottom: 0;
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px 0 32px;
+    top: 0; left: 100px; right: 48px; bottom: 0;
+    padding-top: 10px;
+    overflow: hidden;
   }
   .caderno-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 1.6rem;
-    color: #2a2010;
+    font-family: 'Dancing Script', cursive;
+    font-weight: 600;
+    font-size: 1.55rem;
+    color: #1a140a;
     line-height: var(--caderno-rule-gap);
-    max-width: 680px;
+    max-width: 660px;
     white-space: normal;
-    width: min(100%, 680px);
+    transition: opacity 0.55s ease;
   }
-  .caderno-cursor {
+  .caderno-text.fade-out { opacity: 0; }
+  .caderno-char {
     display: inline-block;
-    width: 2px; height: 1.7em;
-    background: #2a2010;
-    vertical-align: middle;
-    margin-left: 2px;
-    animation: caderno-blink 1s step-end infinite;
+    clip-path: inset(0 105% 0 0);
+    animation: hand-stroke 0.088s ease-out forwards;
   }
-  @keyframes caderno-blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0; }
+  @keyframes hand-stroke {
+    to { clip-path: inset(0 -5% 0 0); }
   }
 
   /* ── PortfolioCientificoView ── */
@@ -4624,39 +4621,28 @@ const CADERNO_FRAGMENTS = [
   "Quer digam que foi como forma de negação, eternização, ou de honrar uma vida que um dia também foi minha. Eu sei que direi que foi um crime, e que escrevo isto como tentativa de reconstituição. Na esperança de que as palavras me devolvam a certeza de que nada mais havia a fazer. De que enquanto segurávamos a mão um do outro já ambos tínhamos morrido.",
 ];
 
+const CHAR_STAGGER = 42;  // ms between each char starting to draw
+const CHAR_DRAW   = 88;   // ms each char takes to fully appear
+
 function CadernoView({ onBack, onGoWorld }) {
   const [fragIdx, setFragIdx] = useState(0);
-  const [displayed, setDisplayed] = useState("");
-  const [phase, setPhase] = useState("typing"); // typing | wait | erasing
+  const [phase, setPhase]     = useState("writing"); // writing | fading
+
+  const frag = CADERNO_FRAGMENTS[fragIdx];
+  const totalDrawMs = frag.length * CHAR_STAGGER + CHAR_DRAW;
 
   useEffect(() => {
-    const frag = CADERNO_FRAGMENTS[fragIdx];
-    let timeout;
-    if (phase === "typing") {
-      if (displayed.length < frag.length) {
-        timeout = setTimeout(() => {
-          setDisplayed(frag.slice(0, displayed.length + 1));
-        }, 42);
-      } else {
-        timeout = setTimeout(() => setPhase("erasing"), 4000);
-      }
-    } else if (phase === "erasing") {
-      if (displayed.length > 0) {
-        timeout = setTimeout(() => {
-          setDisplayed(displayed.slice(0, -1));
-        }, 22);
-      } else {
+    if (phase === "writing") {
+      const t = setTimeout(() => setPhase("fading"), totalDrawMs + 3800);
+      return () => clearTimeout(t);
+    } else {
+      const t = setTimeout(() => {
         setFragIdx(i => (i + 1) % CADERNO_FRAGMENTS.length);
-        setPhase("typing");
-      }
+        setPhase("writing");
+      }, 620);
+      return () => clearTimeout(t);
     }
-    return () => clearTimeout(timeout);
-  }, [displayed, phase, fragIdx]);
-
-  // Reset on fragment change
-  useEffect(() => {
-    setDisplayed("");
-  }, [fragIdx]);
+  }, [phase, fragIdx, totalDrawMs]);
 
   return (
     <div className="caderno-wrap">
@@ -4672,8 +4658,16 @@ function CadernoView({ onBack, onGoWorld }) {
         </div>
         <div className="caderno-margin-line" />
         <div className="caderno-text-area">
-          <p className="caderno-text">
-            {displayed}<span className="caderno-cursor" />
+          <p key={fragIdx} className={`caderno-text${phase === "fading" ? " fade-out" : ""}`}>
+            {Array.from(frag).map((char, i) =>
+              char === " "
+                ? <span key={i}> </span>
+                : <span
+                    key={i}
+                    className="caderno-char"
+                    style={{ animationDelay: `${i * CHAR_STAGGER}ms` }}
+                  >{char}</span>
+            )}
           </p>
         </div>
       </div>
@@ -4913,7 +4907,7 @@ function LinhaTempoView({ onBack, onGoWorld }) {
   const stats = [
     { value: events.length, label: "salas" },
     { value: new Set(events.map((event) => event.type)).size, label: "registos" },
-    { value: events[0]?.date ?? "2020", label: "abertura" },
+    { value: activeEvent?.date, label: "abertura" },
   ];
 
   return (
