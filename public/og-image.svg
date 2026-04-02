@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a2a4a"/>
+      <stop offset="100%" stop-color="#0d1520"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="48%" r="40%">
+      <stop offset="0%" stop-color="rgba(200,169,110,0.12)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+    <!-- Azulejo tile pattern -->
+    <pattern id="tile" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+      <rect width="28" height="28" fill="#1a3a6e"/>
+      <rect x="1" y="1" width="26" height="26" fill="none" stroke="#2a5a9e" stroke-width="0.8"/>
+      <path d="M 4,4 Q 14,11 24,4" fill="none" stroke="#3a6aae" stroke-width="0.7" opacity="0.6"/>
+      <path d="M 4,24 Q 14,17 24,24" fill="none" stroke="#3a6aae" stroke-width="0.7" opacity="0.6"/>
+      <path d="M 4,4 Q 11,14 4,24" fill="none" stroke="#3a6aae" stroke-width="0.7" opacity="0.6"/>
+      <path d="M 24,4 Q 17,14 24,24" fill="none" stroke="#3a6aae" stroke-width="0.7" opacity="0.6"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#sky)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Azulejo strip at top and bottom -->
+  <rect x="0" y="0" width="1200" height="56" fill="url(#tile)" opacity="0.55"/>
+  <rect x="0" y="574" width="1200" height="56" fill="url(#tile)" opacity="0.55"/>
+
+  <!-- Separator lines -->
+  <line x1="0" y1="56" x2="1200" y2="56" stroke="#4a7ab8" stroke-width="1.5" opacity="0.5"/>
+  <line x1="0" y1="574" x2="1200" y2="574" stroke="#4a7ab8" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Name -->
+  <text x="600" y="260"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="96" font-weight="400" font-style="italic"
+    text-anchor="middle" dominant-baseline="middle"
+    fill="#f0e8d8" letter-spacing="-1">
+    Mariana Lameiro
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="355"
+    font-family="'Courier New', monospace"
+    font-size="22" font-weight="300"
+    text-anchor="middle" dominant-baseline="middle"
+    fill="rgba(200,185,150,0.75)" letter-spacing="4">
+    MATHEMATICS · BIOLOGY · PSYCHOLOGY · WRITING
+  </text>
+
+  <!-- Decorative dots -->
+  <circle cx="480" cy="420" r="2.5" fill="rgba(200,169,110,0.45)"/>
+  <circle cx="600" cy="420" r="2.5" fill="rgba(200,169,110,0.45)"/>
+  <circle cx="720" cy="420" r="2.5" fill="rgba(200,169,110,0.45)"/>
+
+  <!-- Coordinates -->
+  <text x="600" y="460"
+    font-family="'Courier New', monospace"
+    font-size="16" font-weight="300"
+    text-anchor="middle" dominant-baseline="middle"
+    fill="rgba(160,148,120,0.5)" letter-spacing="3">
+    38°43'N  9°8'W · LISBOA
+  </text>
+</svg>

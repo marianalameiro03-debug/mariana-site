@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Azulejo tile background -->
+  <rect width="32" height="32" fill="#1a3a6e" rx="3"/>
+  <!-- Tile border frame -->
+  <rect x="2" y="2" width="28" height="28" fill="none" stroke="#4a7ab8" stroke-width="1.5" rx="2"/>
+  <!-- Inner decorative corners (azulejo style) -->
+  <circle cx="5" cy="5" r="1.2" fill="#4a7ab8" opacity="0.7"/>
+  <circle cx="27" cy="5" r="1.2" fill="#4a7ab8" opacity="0.7"/>
+  <circle cx="5" cy="27" r="1.2" fill="#4a7ab8" opacity="0.7"/>
+  <circle cx="27" cy="27" r="1.2" fill="#4a7ab8" opacity="0.7"/>
+  <!-- Letter M -->
+  <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
+    font-family="Georgia, serif" font-size="16" font-style="italic" font-weight="bold"
+    fill="#d4e8f8">M</text>
+</svg>

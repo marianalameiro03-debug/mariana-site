@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mariana-brites-lameiro.surge.sh/sitemap.xml
