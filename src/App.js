@@ -2619,6 +2619,15 @@ const css = `
     display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
     pointer-events: auto;
   }
+  .egg-bar {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .egg-score {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.10em;
+    color: rgba(200,169,110,0.55);
+  }
+  .egg-score .egg-n { color: rgba(200,169,110,0.90); }
   .egg-dots {
     display: flex; gap: 7px; align-items: center;
   }
@@ -2633,19 +2642,43 @@ const css = `
     box-shadow: 0 0 7px rgba(200,169,110,0.50);
     border-color: rgba(200,169,110,0.60);
   }
-  .egg-labels {
-    display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
-    opacity: 0; transition: opacity 0.25s;
-    pointer-events: none;
-  }
-  .egg-counter:hover .egg-labels { opacity: 1; }
-  .egg-label {
+  .egg-hint-btn {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(200,169,110,0.08);
+    border: 1px solid rgba(200,169,110,0.22);
+    color: rgba(200,169,110,0.55);
     font-family: 'DM Mono', monospace;
-    font-size: 0.52rem; letter-spacing: 0.10em;
-    color: rgba(200,169,110,0.40);
+    font-size: 0.55rem; line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .egg-hint-btn:hover, .egg-hint-btn.open {
+    background: rgba(200,169,110,0.18);
+    border-color: rgba(200,169,110,0.55);
+    color: rgba(200,169,110,0.90);
+  }
+  .egg-hints-panel {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 5px;
+    background: rgba(10,16,30,0.88);
+    border: 1px solid rgba(200,169,110,0.18);
+    border-radius: 4px; padding: 10px 14px;
+    animation: egg-toast-in 0.22s ease both;
+  }
+  .egg-hint-row {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem; letter-spacing: 0.08em;
     white-space: nowrap;
   }
-  .egg-label.found { color: rgba(200,169,110,0.80); }
+  .egg-hint-dot {
+    width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(200,169,110,0.18);
+    border: 1px solid rgba(200,169,110,0.25);
+  }
+  .egg-hint-dot.found { background: rgba(200,169,110,0.75); border-color: rgba(200,169,110,0.60); }
+  .egg-hint-name { color: rgba(200,169,110,0.85); }
+  .egg-hint-clue { color: rgba(200,169,110,0.38); font-style: italic; }
   .egg-toast {
     position: fixed; bottom: 52px; right: 24px; z-index: 9001;
     font-family: 'DM Mono', monospace;
@@ -5000,6 +5033,13 @@ export default function App() {
   const [fogActive, setFogActive]     = useState(false);
   const [foundEggs, setFoundEggs]     = useState(new Set());
   const [eggToast, setEggToast]       = useState(null);
+  const [showHints, setShowHints]     = useState(false);
+
+  const EGGS = [
+    { id: "fireflies", name: "pirilampos",      clue: "existe uma palavra que acende a cidade à noite" },
+    { id: "freeze",    name: "tempo congelado", clue: "tenta mudar o tempo da cidade" },
+    { id: "fog",       name: "névoa",           clue: "fica quieta... muito quieta" },
+  ];
 
   const { playing, toggle: toggleJazz } = useJazz();
 
@@ -5516,27 +5556,37 @@ export default function App() {
     )}
 
     {/* Easter egg counter */}
-    {view === "street" && (
-      <div className="egg-counter">
-        {eggToast && <div className="egg-toast">segredo descoberto</div>}
-        <div className="egg-labels">
-          {[
-            { id: "fireflies", label: "pirilampos" },
-            { id: "freeze",    label: "tempo congelado" },
-            { id: "fog",       label: "névoa" },
-          ].map(e => (
-            <span key={e.id} className={`egg-label${foundEggs.has(e.id) ? " found" : ""}`}>
-              {foundEggs.has(e.id) ? e.label : "· · ·"}
-            </span>
+    <div className="egg-counter">
+      {eggToast && <div className="egg-toast">✦ segredo descoberto</div>}
+      {showHints && (
+        <div className="egg-hints-panel">
+          {EGGS.map(e => (
+            <div key={e.id} className="egg-hint-row">
+              <div className={`egg-hint-dot${foundEggs.has(e.id) ? " found" : ""}`} />
+              {foundEggs.has(e.id)
+                ? <span className="egg-hint-name">{e.name}</span>
+                : <span className="egg-hint-clue">{e.clue}</span>
+              }
+            </div>
           ))}
         </div>
+      )}
+      <div className="egg-bar">
+        <span className="egg-score">
+          <span className="egg-n">{foundEggs.size}</span>/{EGGS.length} segredos
+        </span>
         <div className="egg-dots">
-          {["fireflies", "freeze", "fog"].map(id => (
-            <div key={id} className={`egg-dot${foundEggs.has(id) ? " found" : ""}`} />
+          {EGGS.map(e => (
+            <div key={e.id} className={`egg-dot${foundEggs.has(e.id) ? " found" : ""}`} />
           ))}
         </div>
+        <button
+          className={`egg-hint-btn${showHints ? " open" : ""}`}
+          onClick={() => setShowHints(h => !h)}
+          title="dicas"
+        >?</button>
       </div>
-    )}
+    </div>
 
     {/* View transition cover — always at root level so it persists across view changes */}
     {coverPhase && <div className={`street-cover ${coverPhase}`} />}
