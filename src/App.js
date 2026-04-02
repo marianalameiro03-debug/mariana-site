@@ -4561,9 +4561,8 @@ function PortfolioView({ onExplore, onOpenPanel, onGoWorld, lang, onToggleLang }
           <div className="worlds-grid">
             {[
               { id: "caderno",    num: "I",   glyph: "✦", title: lang === "pt" ? "O Caderno"              : "The Notebook",          desc: lang === "pt" ? "Pensamentos em tinta."                      : "Thoughts in ink." },
-              { id: "timeline",   num: "II",  glyph: "◈", title: lang === "pt" ? "Museu do Tempo"         : "Museum of Time",        desc: lang === "pt" ? "Arquivo biográfico em exposição."          : "A biographical archive on display." },
-              { id: "portfolio-c",num: "III", glyph: "◉", title: lang === "pt" ? "Portfólio Científico"   : "Scientific Portfolio",  desc: lang === "pt" ? "Projetos, investigação, trabalho de campo." : "Projects, research, fieldwork." },
-              { id: "research",   num: "IV",  glyph: "⬡", title: lang === "pt" ? "Interesses de Investigação" : "Research Interests", desc: lang === "pt" ? "Perguntas que ainda não sei responder."    : "Questions I can't yet answer." },
+              { id: "portfolio-c",num: "II",  glyph: "◉", title: lang === "pt" ? "Portfólio Científico"   : "Scientific Portfolio",  desc: lang === "pt" ? "Projetos, investigação, trabalho de campo." : "Projects, research, fieldwork." },
+              { id: "research",   num: "III", glyph: "⬡", title: lang === "pt" ? "Interesses de Investigação" : "Research Interests", desc: lang === "pt" ? "Perguntas que ainda não sei responder."    : "Questions I can't yet answer." },
             ].map(w => (
               <button key={w.id} className="world-card" onClick={() => onGoWorld(w.id)}>
                 <div className="world-card-glyph">{w.glyph}</div>
