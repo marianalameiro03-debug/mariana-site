@@ -4955,6 +4955,7 @@ const CADERNO_FRAGMENTS = [
   "culpamos as nossas versões do passado como se isso pudesse roubar alguma dor à do presente. Mas não, não pode. Só a reforça ainda mais.",
   "Quanto é que somos capazes de suportar até a ponte desabar connosco para o outro lado?",
   "Quer digam que foi como forma de negação, eternização, ou de honrar uma vida que um dia também foi minha. Eu sei que direi que foi um crime, e que escrevo isto como tentativa de reconstituição. Na esperança de que as palavras me devolvam a certeza de que nada mais havia a fazer. De que enquanto segurávamos a mão um do outro já ambos tínhamos morrido.",
+  "É preciso ser um realista para descobrir a realidade. É preciso ser um romântico para criá-la. — Fernando Pessoa",
 ];
 
 const CHAR_STAGGER = 42;  // ms between each char starting to draw
